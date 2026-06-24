@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 // ================= MEMORY =================
-const DB_FILE = path.join(__dirname, "celestin_memory.json");
+const DB_FILE = path.join(__dirname, "Ariel_memory.json");
 
 function loadDB() {
   try {
@@ -70,9 +70,9 @@ function getTimeInfo(text) {
 // ================= MODULE =================
 module.exports = {
   config: {
-    name: "celestin",
+    name: "Ariel",
     version: "2.0",
-    author: "Celestin Olua",
+    author: "Ariel Aks",
     role: 0,
     category: "ai"
   },
@@ -88,7 +88,7 @@ module.exports = {
     const lower = body.toLowerCase();
 
     // 🔒 activation uniquement si "celestin"
-    if (!lower.startsWith("celestin")) return;
+    if (!lower.startsWith("Ariel")) return;
 
     const input = body.slice(8).trim();
     const uid = event.senderID;
@@ -114,7 +114,7 @@ module.exports = {
 
     try {
       const prompt = `
-Tu es CÉLESTIN créé par l'unique Célestin olua
+Tu es Ariel créé par l'unique Ariel Aks 
 Tu réponds naturellement tu dois expliqué t'es détails etc, humain, un peu calme.
 Pas trop enthousiaste. T'y dois toujours terminé t'a phrase. 
 
