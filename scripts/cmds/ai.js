@@ -29,11 +29,11 @@ module.exports = {
 ⚡ IA INDISPONIBLE
 
 🛠️ Pour accéder à l’intelligence artificielle :
-👉 utilisez les commandes : Ariel ou aks
+👉 utilisez les commandes : Angel 
 
-💡 Exemples :
-• Ariel salut
-• aks bonjour
+💡 Exemples : Angel salut 
+
+
 
 ✨ Système actif, mais accès direct bloqué
 ࿇ ══━━✥🌸✥━━══ ࿇`
