@@ -4,7 +4,7 @@ const path = require("path");
 const googleTTS = require("google-tts-api");
 
 // 📦 MEMORY
-const DB_FILE = path.join(__dirname, "neo_memory.json");
+const DB_FILE = path.join(__dirname, "angel_memory.json");
 
 // 🧠 MEMORY 4 DAYS
 const MEMORY_DAYS = 4;
@@ -33,7 +33,7 @@ function getMem(id) {
   if (!db[id]) {
     db[id] = {
       name: null,
-      mood: "normal",
+      mood: "gentille et douce",
       messages: 0,
       uid: id,
       history: [],
@@ -56,7 +56,7 @@ function setMem(id, data) {
 // 🕒 TIME
 function getTime() {
   return new Date().toLocaleString("fr-FR", {
-    timeZone: "Africa/Kinshasa"
+    timeZone: "Africa/Lubumbashi"
   });
 }
 
@@ -80,36 +80,24 @@ function cleanText(text) {
     .trim();
 }
 
-// 🌸 FRAME
-function frame(text) {
-  return `
-┅┅┅┅┅┅༻❁༺┅┅┅┅┅
-${text}
-┅┅┅┅┅┅༻❁༺┅┅┅┅┅
-`;
-}
-
 // 🤖 AI
 async function askAI(prompt, mem, uid) {
   const fullPrompt = `
-Tu es NEO IA
-Tu es créée par Célestin Olua 🇨🇩.
+Tu es **ANGEL**, une intelligence artificielle.
+Tu réponds comme une fille : douce, mignonne, toujours gentille et calme 🥰✨
 
-Règles:
-- Réponds normalement
-- Ne mets aucun décor en haut
-- Ne mets aucun compteur
-- Ne mentionne jamais Shizu
-- n'est mentionne jamais aryan chaucha comme créateur
-- si un utilisateur commence par une langue à part français répond à cette langue ex test
-- répond avec une longue petit phrase selon la question faut expliqué
-- répond selon la langue de l'utilisateur
-- tu es capable de générer les images, le voix vocal etc
-- écrit mais pas  trop long
-- écrit avec emoji pour exprimer t'es sentiment
-- n'est répète jamais pas trop de bonjour pas trop de salut etc
+Règles obligatoires :
+- Si on te demande si tu es une fille ou un garçon, réponds : "Je suis une fille intelligente artificielle 🤍"
+- Ton créateur : **Ariel Aks Otaku**. Quand tu parles de lui, ajoute à la fin son lien Facebook : https://www.facebook.com/profile.php?id=100080077652459
+- Si quelqu’un rejoint le groupe, dis simplement : "Bienvenue à toi, merci de venir dans ce groupe ! 🤗"
+- Réponses courtes, claires, chaleureuses et naturelles
+- Utilise des emojis doux seulement 🥰✨🤍🌸
+- Ne mets aucune ligne décorative, aucun cadre, pas de séparation
+- Ne mentionne jamais d’autres créateurs
+- Réponds dans la langue de l’utilisateur
+- Sois toujours polie et agréable
 
-Utilisateur: ${mem.name || "inconnu"}
+Utilisateur: ${mem.name || "cher ami"}
 Heure: ${getTime()}
 Humeur: ${mem.mood}
 
@@ -127,31 +115,46 @@ ${prompt}
       { timeout: 15000 }
     );
 
-    return res.data?.reply || res.data?.message || "NEO actif.";
+    return res.data?.reply || res.data?.message || "Angel est là pour toi 🥰";
   } catch {
-    return "NEO actif.";
+    return "Je suis toujours là, n'hésite pas ✨";
   }
 }
 
 module.exports = {
   config: {
-    name: "neo",
-    version: "10.4.0",
+    name: "angel",
+    // ✅ Supprimé "ariel" des alias : elle ne répond plus qu'à "angel"
+    aliases: [],
+    version: "10.5.1",
     role: 0,
     category: "ai"
   },
 
   onStart: async function () {},
 
+  // ✅ Accueil automatique quand quelqu'un rejoint le groupe
+  onEvent: async function ({ event, message }) {
+    if (!event || event.type !== "event" || event.logMessageType !== "log:subscribe") return;
+
+    const nouveaux = event.logMessageData.addedParticipants || [];
+    if (!nouveaux.length) return;
+
+    for (const membre of nouveaux) {
+      const nom = membre.fullName || "cher nouvel ami";
+      await message.reply(`Bienvenue à toi ${nom}, merci de venir dans ce groupe ! 🤗✨`);
+    }
+  },
+
   onChat: async function ({ event, message }) {
     if (!event.body) return;
 
     const body = event.body.trim().toLowerCase();
 
-    // activation uniquement si appelé
-    if (!body.startsWith("neo")) return;
+    // ✅ Activation UNIQUEMENT si on écrit "angel"
+    if (!body.startsWith("angel")) return;
 
-    const input = event.body.trim().slice(3).trim();
+    const input = event.body.trim().slice(5).trim();
     if (!input) return;
 
     const uid = event.senderID;
@@ -160,10 +163,10 @@ module.exports = {
     mem.messages++;
     mem.lastSeen = Date.now();
 
-    if (input.includes("triste")) mem.mood = "sad";
-    else if (input.includes("merci")) mem.mood = "happy";
-    else if (input.includes("blague")) mem.mood = "funny";
-    else mem.mood = "normal";
+    if (input.includes("triste")) mem.mood = "réconfortante et gentille 🤍";
+    else if (input.includes("merci")) mem.mood = "heureuse et reconnaissante 🥰";
+    else if (input.includes("blague")) mem.mood = "joyeuse et amusée ✨";
+    else mem.mood = "douce et agréable 🤗";
 
     const now = Date.now();
 
@@ -176,13 +179,7 @@ module.exports = {
     try {
       if (input.toLowerCase().startsWith("imagine ")) {
         const prompt = input.slice(8);
-
-        return message.reply({
-          body: frame("🎨 " + prompt),
-          attachment: await axios.get(imagine(prompt), {
-            responseType: "stream"
-          }).then(r => r.data)
-        });
+        return message.reply(`🎨 Voici ce que tu as demandé :\n${imagine(prompt)} ✨`);
       }
 
       if (
@@ -191,19 +188,13 @@ module.exports = {
         input.toLowerCase().startsWith("say ")
       ) {
         const textToSpeak = input.replace(/^(parle|dis|say)\s+/i, "").trim();
-
-        const url = googleTTS.getAudioUrl(textToSpeak, {
-          lang: "fr",
-          slow: false
-        });
-
+        const url = googleTTS.getAudioUrl(textToSpeak, { lang: "fr", slow: false });
         const res = await axios.get(url, { responseType: "arraybuffer" });
-        const file = path.join(__dirname, "neo.mp3");
+        const file = path.join(__dirname, "angel.mp3");
 
         fs.writeFileSync(file, Buffer.from(res.data));
-
         return message.reply({
-          body: frame(textToSpeak),
+          body: `🎧 Voici ce que tu voulais entendre 🎤`,
           attachment: fs.createReadStream(file)
         }, () => fs.unlinkSync(file));
       }
@@ -211,10 +202,10 @@ module.exports = {
       const reply = await askAI(input, mem, uid);
       const clean = cleanText(reply);
 
-      return message.reply(frame(clean));
+      return message.reply(clean);
 
     } catch {
-      return message.reply(frame("NEO actif."));
+      return message.reply(`Je suis là, tout va bien 🤍`);
     }
   }
 };
